@@ -46,6 +46,7 @@ from dataclasses import dataclass
 import yaml
 from ..contracts.clients.logger import Logger
 from ..configuration import ServiceConfig
+from ..utils.environment import get_env_var_as_bool
 
 ENV_KEY_SECURITY_SECRET_STORE = "EDGEX_SECURITY_SECRET_STORE"
 ENV_KEY_DISABLE_JWT_VALIDATION = "EDGEX_DISABLE_JWT_VALIDATION"
@@ -82,23 +83,6 @@ def log_env_variables_override(logger: Logger, name: str, key: str, value: str):
         value_str = REDACTED_STRING
 
     logger.info(f"Variables override of '{name}' by environment variable: {key}={value_str}")
-
-
-def get_env_var_as_bool(logger: Logger, var_name: str, default_value: bool) -> (bool, bool):
-    """
-    Helper function to get the value of an environment variable as a boolean.
-    If the environment variable is not set or contains an invalid value, the default value is
-    returned.
-    """
-    env_value = os.environ.get(var_name)
-    if env_value is not None:
-        if env_value.lower() == "true":
-            return True, True
-        if env_value.lower() == "false":
-            return False, True
-        logger.warn(f"Invalid value for environment variable {var_name}: {env_value}. Using "
-                       f"default value {default_value}")
-    return default_value, False
 
 
 def use_registry(logger: Logger) -> (bool, bool):

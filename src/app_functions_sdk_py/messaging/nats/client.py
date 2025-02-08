@@ -14,7 +14,8 @@ from nats.aio.subscription import Subscription
 from ...contracts.clients.logger import Logger
 from ...interfaces.messaging import (MessageBusConfig, MessageClient, MessageEnvelope,
                                      TopicMessageQueue, AUTH_MODE_CLIENT_CERT, AUTH_MODE_CACERT,
-                                     TlsConfigurationOptions, decode_message_envelope)
+                                     TlsConfigurationOptions, decode_message_envelope, get_msg_payload,
+                                     convert_msg_payload_to_byte_array)
 from ...utils.strconv import parse_bool, parse_int
 
 # common constants for messagebus.Optional properties
@@ -142,9 +143,10 @@ class NatsMessageClient(MessageClient):
 
     def publish(self, message: MessageEnvelope, topic: str):
         async def _run_publish():
+            payload = convert_msg_payload_to_byte_array(message.contentType, message.payload)
             self._logger.info(f"entering _run_publish. client.is_connected "
                               f"{self._client.is_connected}")
-            await self._client.publish(subject=topic,payload=message.payload)
+            await self._client.publish(subject=topic,payload=payload)
             self._logger.info(
                 f"exiting _run_publish. client.is_connected {self._client.is_connected}")
 

@@ -11,7 +11,7 @@ encountered in the EdgeX framework.
 from dataclasses import dataclass
 from typing import Any, List
 
-from ...configuration.keeper import KEY_DELIMITER
+from ...utils.deserialize import KEY_DELIMITER
 
 
 @dataclass

@@ -190,7 +190,8 @@ class MqttMessageClient(MessageClient):
 
     def publish(self, message: MessageEnvelope, topic: str):
         try:
-            message.payload = base64.b64encode(message.payload).decode('utf-8')
+            if isinstance(message.payload, bytes):
+                message.payload = base64.b64encode(message.payload).decode('utf-8')
             marshaled_message = json.dumps(asdict(message))
             self._client.publish(topic=topic,
                                  payload=marshaled_message,

@@ -79,13 +79,3 @@ def delete_empty_and_trim(str_list: list[str]) -> list[str]:
         if s != "":
             result.append(s)
     return result
-
-def is_base64_encoded(data: bytes) -> bool:
-    """ is_base64_encoded checks if the input data is base64 encoded """
-    # to check if incoming bytes is base64 encoded or not, we can decode, then re-encode. If the
-    # re-encoded string is equal to the encoded string, then it is base64 encoded.
-    try:
-        return base64.b64encode(base64.b64decode(data)) == data
-    except Exception:  # pylint: disable=broad-except
-        # for cases where exception raised, we can assume it is not base64 encoded so return False
-        return False

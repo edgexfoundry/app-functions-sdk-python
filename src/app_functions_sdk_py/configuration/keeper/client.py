@@ -14,8 +14,6 @@ Functions:
     new_keeper_client(config: ServiceConfig) -> KeeperClient: Creates a new instance of
     KeeperClient.
 """
-import base64
-import json
 import os
 import queue
 import threading
@@ -35,11 +33,11 @@ from ...contracts import errors
 from ...contracts.common.constants import CONTENT_TYPE_JSON
 from ...contracts.dtos.kvs import KVS
 from ...contracts.dtos.requests import kvs
-from ...configuration.keeper import (conversion, KEY_DELIMITER, KEEPER_TOPIC_PREFIX,
-                                     deserialize_to_dataclass)
+from ...configuration.keeper import conversion
 from ...configuration.keeper.decode import decode
-from ...interfaces.messaging import MessageClient, TopicMessageQueue
+from ...interfaces.messaging import MessageClient, TopicMessageQueue, get_msg_payload
 from ...utils.functionexitcallback import FunctionExitCallback
+from ...utils.deserialize import (KEY_DELIMITER, KEEPER_TOPIC_PREFIX)
 
 
 @dataclass
@@ -224,9 +222,7 @@ class KeeperClient(ConfigurationClient):
                                 continue
 
                             try:
-                                payload_bytes = base64.b64decode(msg_envelope.payload)
-                                payload_dict = json.loads(payload_bytes)
-                                updated_config = deserialize_to_dataclass(payload_dict, KVS)
+                                updated_config = get_msg_payload(msg_envelope, KVS)
                             except (TypeError, ValueError) as e:
                                 error_channel.put(
                                     RuntimeError(

@@ -450,7 +450,7 @@ class Service(ApplicationService):
         if messaging_client is None:
             raise ValueError("MessageBus client not available")
 
-        message = new_message_envelope(data, content_type)
+        message = new_message_envelope(self.logger(), data, content_type)
         publish_topic = build_topic(
             build_topic(self.service_config.MessageBus.BaseTopicPrefix, topic))
 

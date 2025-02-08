@@ -11,7 +11,7 @@ import os
 API_VERSION = "v3"
 API_BASE = "/api/v3"
 
-CONFIG_STEM_APP = "edgex/v3"
+CONFIG_STEM_APP = "edgex/v4"
 
 APPLICATION_VERSION = os.getenv("APPLICATION_VERSION", "0.0.0")
 
