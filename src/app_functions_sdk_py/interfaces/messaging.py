@@ -39,7 +39,8 @@ from ..contracts.common.constants import API_VERSION, CONTENT_TYPE_JSON, CONTENT
 from ..contracts.dtos.common.base import Versionable
 from ..contracts.clients.utils import common
 from ..contracts.clients.logger import Logger
-from ..utils.environment import get_env_var_as_bool, ENV_EDGEX_MSG_BASE64_PAYLOAD
+from ..utils.environment import get_env_var_as_bool
+from ..constants import ENV_EDGEX_MSG_BASE64_PAYLOAD
 from ..utils.base64 import is_base64_encoded
 from ..utils.strconv import parse_bool
 

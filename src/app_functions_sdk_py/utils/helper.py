@@ -8,7 +8,7 @@ import base64
 import json
 from typing import Any, Optional, Tuple
 
-from ..bootstrap.environment import ENV_KEY_SECURITY_SECRET_STORE
+from ..constants import ENV_KEY_SECURITY_SECRET_STORE
 from ..contracts import errors
 from ..contracts.clients.utils.common import convert_any_to_dict
 from ..contracts.common import constants
