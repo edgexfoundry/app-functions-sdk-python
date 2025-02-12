@@ -11,8 +11,6 @@ Functions:
 - build_metric_tags: Builds metric tags from a dictionary of tags.
 """
 
-import json
-import uuid
 from copy import copy
 from typing import List, Optional
 
@@ -32,7 +30,7 @@ from ...contracts.common import utils
 from ...contracts.common import constants
 from ...contracts.common.constants import CONTENT_TYPE_JSON
 from ...contracts.dtos.metric import MetricTag, MetricField, new_metric
-from ...interfaces import MessageEnvelope
+from ...interfaces.messaging import new_message_envelope
 from ...internal.common.config import TelemetryInfo
 from ...contracts import errors
 
@@ -165,12 +163,8 @@ class MessageBusReporter(MetricsReporter):
                     f"unable to create metric for {name}: {err}")
                 errs.append(err)
 
-            payload = json.dumps(convert_any_to_dict(next_metric)).encode('utf-8')
-            message = MessageEnvelope(
-                correlationID=str(uuid.uuid4()),
-                payload=payload,
-                contentType=CONTENT_TYPE_JSON
-            )
+            message = new_message_envelope(self.logger, convert_any_to_dict(next_metric),
+                                           CONTENT_TYPE_JSON)
 
             topic = utils.build_topic(self.base_metrics_topic, name)
             try:

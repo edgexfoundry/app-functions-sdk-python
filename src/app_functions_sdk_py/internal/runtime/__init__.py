@@ -39,7 +39,7 @@ from ...functions.context import Context
 from ...interfaces import FunctionPipeline, AppFunctionContext, AppFunction, calculate_pipeline_hash
 from ...interfaces.messaging import MessageEnvelope
 from ...sync.waitgroup import WaitGroup
-from ...utils.helper import is_base64_encoded
+from ...utils.base64 import is_base64_encoded
 
 DEFAULT_MIN_RETRY_INTERVAL = 1
 
@@ -238,7 +238,7 @@ class FunctionsPipelineRuntime:
             if is_base64_encoded(envelope.payload):
                 dto_bytes = base64.b64decode(envelope.payload)
             else:
-                dto_bytes = envelope.payload
+                dto_bytes = json.dumps(envelope.payload).encode()
         except json.JSONDecodeError as e:
             raise ValueError(f"failed to decode JSON payload: {e}") from e
         self._logger.debug("Attempting to process Payload as an AddEventRequest DTO")

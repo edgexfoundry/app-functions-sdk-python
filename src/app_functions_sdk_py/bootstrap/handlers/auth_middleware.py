@@ -2,7 +2,8 @@
 #  SPDX-License-Identifier: Apache-2.0
 from typing import Callable
 
-from ..environment import get_env_var_as_bool, ENV_KEY_DISABLE_JWT_VALIDATION
+from ..environment import get_env_var_as_bool
+from ...constants import ENV_KEY_DISABLE_JWT_VALIDATION
 from ...bootstrap.interface.secret import SecretProviderExt
 from ...contracts.clients.logger import Logger
 from ...utils.helper import is_security_enabled

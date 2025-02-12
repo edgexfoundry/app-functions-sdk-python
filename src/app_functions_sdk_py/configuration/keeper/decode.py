@@ -6,7 +6,7 @@ This module provides a utility function to decode key-value pairs into a configu
 """
 from typing import Any, List
 from numpy import int8, int16, int32, int64, float32, float64
-from ...configuration.keeper import KEY_DELIMITER, deserialize_to_dataclass
+from ...utils.deserialize import KEY_DELIMITER, deserialize_to_dataclass
 from ...contracts.dtos.kvs import KVS
 
 

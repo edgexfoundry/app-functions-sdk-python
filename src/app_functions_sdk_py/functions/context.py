@@ -199,7 +199,7 @@ class Context(AppFunctionContext):
         if config is None:
             raise ValueError("Configuration not available")
 
-        message = new_message_envelope(data, content_type)
+        message = new_message_envelope(self.logger(), data, content_type)
 
         full_topic = build_topic(build_topic(config.MessageBus.BaseTopicPrefix, topic))
 

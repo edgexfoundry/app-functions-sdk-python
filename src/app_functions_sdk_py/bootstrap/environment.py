@@ -44,21 +44,14 @@ import re
 from typing import Any
 from dataclasses import dataclass
 import yaml
+
+from ..constants import ENV_KEY_SECURITY_SECRET_STORE, ENV_KEY_CONFIG_PROVIDER_URL, ENV_KEY_COMMON_CONFIG, \
+    ENV_KEY_USE_REGISTRY, ENV_KEY_STARTUP_DURATION, ENV_KEY_STARTUP_INTERVAL, ENV_KEY_CONFIG_DIR, ENV_KEY_PROFILE, \
+    ENV_KEY_CONFIG_FILE, ENV_KEY_FILE_URI_TIMEOUT, ENV_KEY_REMOTE_SERVICE_HOSTS
 from ..contracts.clients.logger import Logger
 from ..configuration import ServiceConfig
+from ..utils.environment import get_env_var_as_bool
 
-ENV_KEY_SECURITY_SECRET_STORE = "EDGEX_SECURITY_SECRET_STORE"
-ENV_KEY_DISABLE_JWT_VALIDATION = "EDGEX_DISABLE_JWT_VALIDATION"
-ENV_KEY_CONFIG_PROVIDER_URL = "EDGEX_CONFIG_PROVIDER"
-ENV_KEY_COMMON_CONFIG = "EDGEX_COMMON_CONFIG"
-ENV_KEY_USE_REGISTRY = "EDGEX_USE_REGISTRY"
-ENV_KEY_STARTUP_DURATION = "EDGEX_STARTUP_DURATION"
-ENV_KEY_STARTUP_INTERVAL = "EDGEX_STARTUP_INTERVAL"
-ENV_KEY_CONFIG_DIR = "EDGEX_CONFIG_DIR"
-ENV_KEY_PROFILE = "EDGEX_PROFILE"
-ENV_KEY_CONFIG_FILE = "EDGEX_CONFIG_FILE"
-ENV_KEY_FILE_URI_TIMEOUT = "EDGEX_FILE_URI_TIMEOUT"
-ENV_KEY_REMOTE_SERVICE_HOSTS = "EDGEX_REMOTE_SERVICE_HOSTS"
 REDACTED_STRING = "<redacted>"
 INSECURE_SECRETS_REGEX = r"^Writable\.InsecureSecrets\.[^.]+\.Secrets\..+$"
 DEFAULT_CONFIG_DIR = "./res"
@@ -82,23 +75,6 @@ def log_env_variables_override(logger: Logger, name: str, key: str, value: str):
         value_str = REDACTED_STRING
 
     logger.info(f"Variables override of '{name}' by environment variable: {key}={value_str}")
-
-
-def get_env_var_as_bool(logger: Logger, var_name: str, default_value: bool) -> (bool, bool):
-    """
-    Helper function to get the value of an environment variable as a boolean.
-    If the environment variable is not set or contains an invalid value, the default value is
-    returned.
-    """
-    env_value = os.environ.get(var_name)
-    if env_value is not None:
-        if env_value.lower() == "true":
-            return True, True
-        if env_value.lower() == "false":
-            return False, True
-        logger.warn(f"Invalid value for environment variable {var_name}: {env_value}. Using "
-                       f"default value {default_value}")
-    return default_value, False
 
 
 def use_registry(logger: Logger) -> (bool, bool):
