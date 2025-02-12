@@ -1,4 +1,4 @@
-# Copyright (C) 2024 IOTech Ltd
+# Copyright (C) 2024-2025 IOTech Ltd
 # SPDX-License-Identifier: Apache-2.0
 
 import time
@@ -221,7 +221,8 @@ class TestKeeperClient(unittest.TestCase):
 
         try:
             client.put_configuration(expected, True)
-            actual = client.get_configuration(TestConfig())
+            actual = TestConfig()
+            client.get_configuration(actual)
         except Exception as e:
             self.fail(f"Unexpected exception: {e}")
 

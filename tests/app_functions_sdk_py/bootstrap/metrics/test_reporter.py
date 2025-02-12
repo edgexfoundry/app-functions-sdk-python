@@ -1,4 +1,4 @@
-#  Copyright (C) 2024 IOTech Ltd
+#  Copyright (C) 2024-2025 IOTech Ltd
 #  SPDX-License-Identifier: Apache-2.0
 
 import unittest
@@ -170,7 +170,7 @@ class TestNewMessageBusReporter(unittest.TestCase):
 
                     message = metric_arg
                     assert isinstance(message, MessageEnvelope), "metricArg should be of type MessageEnvelope"
-                    actual = Metric.from_dict(json.loads(message.payload.decode("utf-8")))
+                    actual = Metric.from_dict(message.payload)
                     assert actual.name == test.expected_metric.name, "Metric name mismatch"
 
                     actual.timestamp = test.expected_metric.timestamp
