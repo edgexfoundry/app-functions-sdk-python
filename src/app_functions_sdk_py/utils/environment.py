@@ -9,6 +9,7 @@ import os
 
 from app_functions_sdk_py.contracts.clients.logger import Logger
 
+ENV_EDGEX_MSG_BASE64_PAYLOAD = "EDGEX_MSG_BASE64_PAYLOAD"
 
 def get_env_var_as_bool(logger: Logger, var_name: str, default_value: bool) -> (bool, bool):
     """
