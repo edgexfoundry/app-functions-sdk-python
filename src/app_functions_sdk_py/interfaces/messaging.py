@@ -40,7 +40,7 @@ from ..contracts.dtos.common.base import Versionable
 from ..contracts.clients.utils import common
 from ..contracts.clients.logger import Logger
 from ..utils.environment import get_env_var_as_bool
-from ..constants import ENV_EDGEX_MSG_BASE64_PAYLOAD
+from ..constants import ENV_KEY_EDGEX_MSG_BASE64_PAYLOAD
 from ..utils.base64 import is_base64_encoded
 from ..utils.strconv import parse_bool
 
@@ -286,7 +286,7 @@ def new_message_envelope(lc: Logger, payload: Any, content_type: str = CONTENT_T
 
     # EDGEX_MSG_BASE64_PAYLOAD=true will only cause the message envelope published to
     # EdgeX message bus with a base64-encoded payload, e.g. service metrics.
-    base64payload, _ = get_env_var_as_bool(lc, ENV_EDGEX_MSG_BASE64_PAYLOAD, False)
+    base64payload, _ = get_env_var_as_bool(lc, ENV_KEY_EDGEX_MSG_BASE64_PAYLOAD, False)
     if base64payload:
         message.convert_msg_payload_to_byte_array()
 
