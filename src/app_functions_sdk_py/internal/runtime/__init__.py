@@ -141,7 +141,7 @@ class FunctionsPipelineRuntime:
         """
         pipeline = self._pipelines.get(pipeline_id)
         if pipeline is not None:
-            return errors.new_common_edgex(errors.ErrKind.STATUS_CONFLICT,
+            raise errors.new_common_edgex(errors.ErrKind.STATUS_CONFLICT,
                                            f"pipeline with Id='{pipeline_id}' already exists")
 
         self._add_function_pipeline(pipeline_id, topics, *transforms)
