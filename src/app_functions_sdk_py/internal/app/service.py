@@ -591,16 +591,21 @@ class Service(ApplicationService):
             lc.error("%s: %s", msg, err)
             raise errors.new_common_edgex(errors.ErrKind.CONTRACT_INVALID,
                                           "msg", err)
-        if interval.total_seconds() == 0:
+
+        # determine whether the reporting interval is effectively disabled by checking if the
+        # interval duration is zero
+        disable_report = interval.total_seconds() == 0
+        if disable_report:
             lc.info("0 specified for metrics reporting interval. Setting to a very large duration "
                     "to effectively disable reporting.")
-            interval = isodate.parse_duration(f"PT{2^31-1}S")
+            interval = isodate.parse_duration(f"PT{2**31-1}S")
 
         base_topic = service_config.MessageBus.get_base_topic_prefix()
         reporter = MessageBusReporter(lc, base_topic, self.service_key, self._dic, telemetry_config)
         manager = Manager(lc, interval, reporter)
 
-        manager.run(self.ctx_done, self.wait_group)
+        if not disable_report:
+            manager.run(self.ctx_done, self.wait_group)
 
         self._dic.update({
             MetricsManagerInterfaceName: lambda get: manager
