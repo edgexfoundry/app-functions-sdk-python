@@ -232,13 +232,19 @@ class FunctionsPipelineRuntime:
 
         try:
             # note that the message envelope received from the message bus is in JSON format
-            # and the payload can be either plain-text bytes or decoded into base64 bytes, so we
-            # need to determine if the payload is in base64 encoding and decode the payload here
-            # before we can process it as an Event DTO
+            # and the payload can be decoded into base64 bytes when EDGEX_MSG_BASE64_PAYLOAD=true in
+            # other EdgeX services, so we need to determine if the payload is in base64 encoding and
+            # decode the payload here before we can process it as an Event DTO
             if is_base64_encoded(envelope.payload):
                 dto_bytes = base64.b64decode(envelope.payload)
             else:
-                dto_bytes = json.dumps(envelope.payload).encode()
+                # it's possible that the payload is already in bytes format, for example, the http
+                # trigger may pass the payload as bytes
+                if isinstance(envelope.payload, bytes):
+                    dto_bytes = envelope.payload
+                else:
+                    # for other types of payload, e.g. dict, we need to encode it into bytes
+                    dto_bytes = json.dumps(envelope.payload).encode()
         except json.JSONDecodeError as e:
             raise ValueError(f"failed to decode JSON payload: {e}") from e
         self._logger.debug("Attempting to process Payload as an AddEventRequest DTO")
