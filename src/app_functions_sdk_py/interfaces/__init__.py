@@ -16,6 +16,7 @@ Classes:
 import inspect
 import threading
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from typing import Callable, Tuple, List, Any, Dict, Optional
 
 from pyformance import meters
@@ -322,6 +323,16 @@ def calculate_pipeline_hash(*transforms: AppFunction) -> str:
     for func in transforms:
         result = f"{result} {func.__name__}"
     return result
+
+
+def payload_with_correct_content_type(envelope: MessageEnvelope) -> MessageEnvelope:
+    """
+    Ensures the payload has the correct content type.
+    """
+    content_type = envelope.contentType.split(';')[0]
+    copy_envelope = deepcopy(envelope)
+    copy_envelope.contentType = content_type
+    return copy_envelope
 
 
 class FunctionPipeline:  # pylint: disable=too-few-public-methods

@@ -36,8 +36,9 @@ from ...contracts.dtos.event import Event
 from ...contracts.dtos.requests.event import AddEventRequest
 from ...contracts.dtos.store_object import new_stored_object, StoredObject
 from ...functions.context import Context
-from ...interfaces import FunctionPipeline, AppFunctionContext, AppFunction, calculate_pipeline_hash
-from ...interfaces.messaging import MessageEnvelope
+from ...interfaces import FunctionPipeline, AppFunctionContext, AppFunction, calculate_pipeline_hash, \
+    payload_with_correct_content_type
+from ...interfaces.messaging import MessageEnvelope, get_msg_payload
 from ...sync.waitgroup import WaitGroup
 from ...utils.base64 import is_base64_encoded
 
@@ -226,37 +227,15 @@ class FunctionsPipelineRuntime:
         """
         process_event_payload processes the event payload from the message envelope
         """
-        content_type = envelope.contentType.lower()
-        if content_type != CONTENT_TYPE_JSON:
-            raise ValueError(f"unsupported content type: {content_type}")
-
         try:
-            # note that the message envelope received from the message bus is in JSON format
-            # and the payload can be decoded into base64 bytes when EDGEX_MSG_BASE64_PAYLOAD=true in
-            # other EdgeX services, so we need to determine if the payload is in base64 encoding and
-            # decode the payload here before we can process it as an Event DTO
-            if is_base64_encoded(envelope.payload):
-                dto_bytes = base64.b64decode(envelope.payload)
-            else:
-                # it's possible that the payload is already in bytes format, for example, the http
-                # trigger may pass the payload as bytes
-                if isinstance(envelope.payload, bytes):
-                    dto_bytes = envelope.payload
-                else:
-                    # for other types of payload, e.g. dict, we need to encode it into bytes
-                    dto_bytes = json.dumps(envelope.payload).encode()
-        except json.JSONDecodeError as e:
-            raise ValueError(f"failed to decode JSON payload: {e}") from e
-        self._logger.debug("Attempting to process Payload as an AddEventRequest DTO")
-        try:
-            request_dto = AddEventRequest.from_json(dto_bytes)  # pylint: disable=no-member
+            request_dto = get_msg_payload(payload_with_correct_content_type(envelope), AddEventRequest)
             event = request_dto.event
             return event
-        except Exception as e:  # pylint: disable=broad-exception-caught
+        except Exception as e: # pylint: disable=broad-exception-caught
             self._logger.debug(f"Failed to process Payload as an AddEventRequest DTO: {e}"
                                f"Attempting to process Payload as an Event DTO")
         try:
-            event = Event.from_json(dto_bytes)  # pylint: disable=no-member
+            event = get_msg_payload(payload_with_correct_content_type(envelope), Event)
             return event
         except Exception as e:  # pylint: disable=broad-exception-caught
             raise errors.new_common_edgex(errors.ErrKind.CONTRACT_INVALID,
