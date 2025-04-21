@@ -42,12 +42,12 @@ class BaseReading:
         value (str): The value of the reading.
         tags (Tags): The tags associated with the reading.
     """
-    id: str
     origin: int
     deviceName: str
     resourceName: str
     profileName: str
     valueType: str
+    id: str = ""
     # To allow value as null (https://github.com/edgexfoundry/go-mod-core-contracts/issues/931),
     # specify value as Optional[str]
     value: Optional[str] = None
