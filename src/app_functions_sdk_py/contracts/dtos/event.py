@@ -59,7 +59,6 @@ class Event(Versionable):
     origin: int = 0
     readings: list[BaseReading] = field(default_factory=lambda: [], init=True)
     tags: Tags = field(default_factory=lambda: {}, init=True)
-    apiVersion: str = field(default=API_VERSION, init=False)
 
     def add_base_reading(self, resource_name: str, value_type: str, value: Any):
         """ add_base_reading creates the reading and append to the event """

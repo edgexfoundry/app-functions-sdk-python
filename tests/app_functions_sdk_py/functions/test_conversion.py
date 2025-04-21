@@ -42,7 +42,7 @@ class TestConversion(unittest.TestCase):
         event_in = Event()
         event_in.deviceName = "device1"
         expected_result = (
-            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Event><Id></Id>"
+            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<Event><ApiVersion>v3</ApiVersion><Id></Id>"
             "<DeviceName>device1</DeviceName><ProfileName></ProfileName><SourceName></SourceName>"
             "<Origin>0</Origin><Tags></Tags></Event>")
         conv = conversion.Conversion()
@@ -71,7 +71,7 @@ class TestConversion(unittest.TestCase):
         event_in = Event()
         event_in.deviceName = "device1"
         expected_result = (
-            '{"id": "", "deviceName": "device1", "profileName": "", '
+            '{"apiVersion": "v3", "id": "", "deviceName": "device1", "profileName": "", '
             '"sourceName": "", "origin": 0, "readings": [], "tags": {}}')
         conv = conversion.Conversion()
 
