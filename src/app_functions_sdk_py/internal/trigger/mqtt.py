@@ -277,7 +277,8 @@ def create_mqtt_client(sp: SecretProvider, lc: Logger, config: ExternalMqttConfi
     lc.info("Connecting to mqtt broker for MQTT trigger at: %s", config.Url)
 
     try:
-        rc = mqtt_client.connect(mqtt_config.broker_address)
+        # connect to the MQTT broker with user defined port and keep_alive instead of default value
+        rc = mqtt_client.connect(mqtt_config.broker_address, mqtt_config.port, mqtt_config.keep_alive)
         if rc == pahomqtt.MQTT_ERR_SUCCESS:
             mqtt_client.loop_start()
     except Exception as e:
