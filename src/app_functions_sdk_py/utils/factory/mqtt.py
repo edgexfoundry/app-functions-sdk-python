@@ -36,6 +36,8 @@ class MQTTClientConfig:
     auth_mode: str
     # client_id is the client id to use when connecting to the broker
     client_id: str
+    # port is the port of the MQTT broker
+    port: int = 1883
     # qos is the quality of service to use when publishing messages
     qos: int = 0
     # retain indicates whether the broker should retain messages

@@ -17,6 +17,7 @@ APPLICATION_VERSION = os.getenv("APPLICATION_VERSION", "0.0.0")
 
 # Constants related to the key of environment variables
 ENV_ENCODE_ALL_EVENTS = "EDGEX_ENCODE_ALL_EVENTS_CBOR"
+ENV_MESSAGE_CBOR_ENCODE = "EDGEX_MSG_CBOR_ENCODE"
 
 # Miscellaneous constants
 

@@ -24,6 +24,7 @@ bus configuration with these defaults.
 """
 import base64
 import json
+import os
 
 from queue import Queue
 from abc import ABC, abstractmethod
@@ -35,7 +36,8 @@ import cbor2
 from dataclasses_json import dataclass_json
 
 from ..utils.deserialize import deserialize_to_dataclass
-from ..contracts.common.constants import API_VERSION, CONTENT_TYPE_JSON, CONTENT_TYPE_CBOR
+from ..contracts.common.constants import API_VERSION, CONTENT_TYPE_JSON, CONTENT_TYPE_CBOR, ENV_MESSAGE_CBOR_ENCODE, \
+    VALUE_TRUE
 from ..contracts.dtos.common.base import Versionable
 from ..contracts.clients.utils import common
 from ..contracts.clients.logger import Logger
@@ -180,7 +182,12 @@ class MessageEnvelope(Versionable):
     payload: Any = None
     contentType: str = CONTENT_TYPE_JSON
     queryParams: Optional[dict[str, str]] = None
-    apiVersion: str = field(default=API_VERSION, init=False)
+    """
+    When using field(default=API_VERSION, init=False), this apiVersion is excluded from the __init__() method, 
+    meaning you cannot pass it during initialization via MessageEnvelope(**dict) if dict contains apiVersion.
+    To allow passing apiVersion to the __init__() method, we assign the value to apiVersion instead.
+    """
+    apiVersion: str = API_VERSION
 
     def convert_msg_payload_to_byte_array(self):
         """
@@ -297,6 +304,10 @@ def decode_message_envelope(payload: bytes):
     """
     Decodes a message payload into a MessageEnvelope object.
     """
+    if os.getenv(ENV_MESSAGE_CBOR_ENCODE) == VALUE_TRUE:
+        data = cbor2.loads(payload)
+        return MessageEnvelope(**data)
+
     # decode the message payload into a dict using json.loads
     payload_json_decoded = json.loads(payload.decode())
     # note that if the payload_json_decoded["payload"] is decoded as str by json.loads

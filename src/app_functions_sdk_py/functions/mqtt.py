@@ -78,7 +78,8 @@ class MQTTSender:
                 return None
             lc.info(f"MQTTSender connecting to MQTT Broker({self._mqtt_config.broker_address})")
             try:
-                rc = self._client.connect(self._mqtt_config.broker_address)
+                # connect to the MQTT broker with user defined port and keep_alive instead of default value
+                rc = self._client.connect(self._mqtt_config.broker_address, self._mqtt_config.port, self._mqtt_config.keep_alive)
                 if rc != pahomqtt.MQTT_ERR_SUCCESS:
                     raise ValueError(f"Failed to connect to MQTT Broker"
                                      f"({self._mqtt_config.broker_address}), return code is {rc}")
