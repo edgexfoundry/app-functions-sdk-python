@@ -1,11 +1,11 @@
-#  Copyright (C) 2024 IOTech Ltd
+#  Copyright (C) 2024-2025 IOTech Ltd
 #  SPDX-License-Identifier: Apache-2.0
 """
 This module provides the classes and functions for App Functions Runtime
 """
-import asyncio
-import base64
+
 import json
+import os
 import threading
 import time
 from copy import deepcopy
@@ -31,7 +31,7 @@ from ...constants import TOPIC_WILDCARD, TOPIC_SINGLE_LEVEL_WILDCARD, TOPIC_LEVE
     DEFAULT_PIPELINE_ID
 from ...contracts import errors
 from ...contracts.common import constants
-from ...contracts.common.constants import CONTENT_TYPE_JSON, CORRELATION_HEADER
+from ...contracts.common.constants import CONTENT_TYPE_JSON, CORRELATION_HEADER, VALUE_TRUE, ENV_OPTIMIZE_EVENT_PAYLOAD
 from ...contracts.dtos.event import Event
 from ...contracts.dtos.requests.event import AddEventRequest
 from ...contracts.dtos.store_object import new_stored_object, StoredObject
@@ -40,7 +40,6 @@ from ...interfaces import FunctionPipeline, AppFunctionContext, AppFunction, cal
     payload_with_correct_content_type
 from ...interfaces.messaging import MessageEnvelope, get_msg_payload
 from ...sync.waitgroup import WaitGroup
-from ...utils.base64 import is_base64_encoded
 
 DEFAULT_MIN_RETRY_INTERVAL = 1
 
@@ -230,6 +229,17 @@ class FunctionsPipelineRuntime:
         try:
             request_dto = get_msg_payload(payload_with_correct_content_type(envelope), AddEventRequest)
             event = request_dto.event
+
+            if os.getenv(ENV_OPTIMIZE_EVENT_PAYLOAD) == VALUE_TRUE:
+                # recover the reduced fields for the AddEventRequest
+                for r in event.readings:
+                    r.deviceName = event.deviceName
+                    r.profileName = event.profileName
+                    if r.origin == 0:
+                        r.origin = event.origin
+                    if len(event.readings) == 1 and len(r.resourceName) == 0:
+                        r.resourceName = event.sourceName
+
             return event
         except Exception as e: # pylint: disable=broad-exception-caught
             self._logger.debug(f"Failed to process Payload as an AddEventRequest DTO: {e}"
