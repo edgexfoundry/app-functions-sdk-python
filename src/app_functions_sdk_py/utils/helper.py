@@ -12,6 +12,7 @@ from ..constants import ENV_KEY_SECURITY_SECRET_STORE
 from ..contracts import errors
 from ..contracts.clients.utils.common import convert_any_to_dict
 from ..contracts.common import constants
+from ..contracts.common.constants import ENV_OPTIMIZE_EVENT_PAYLOAD, VALUE_TRUE
 from ..contracts.dtos.event import Event
 
 value_types = [
@@ -47,7 +48,21 @@ def coerce_type(param: Any) -> Tuple[bytes, Optional[errors.EdgeX]]:
             for r in param.readings:
                 if r.valueType == constants.VALUE_TYPE_BINARY:
                     r.binaryValue = base64.b64encode(r.binaryValue).decode()
-        json_encoded_data = json.dumps(convert_any_to_dict(param)).encode('utf-8')
+
+        any_dict = convert_any_to_dict(param)
+
+        if isinstance(param, Event) and os.getenv(ENV_OPTIMIZE_EVENT_PAYLOAD) == VALUE_TRUE:
+            # reduce the fields by removing the dict key
+            for r in any_dict["readings"]:
+                del r["id"]
+                del r["deviceName"]
+                del r["profileName"]
+                if any_dict["origin"] == r["origin"]:
+                    del r["origin"]
+                if len(any_dict["readings"]) == 1 and any_dict["sourceName"] == r["resourceName"]:
+                    del r["resourceName"]
+
+        json_encoded_data = json.dumps(any_dict).encode('utf-8')
         return json_encoded_data, None
     except TypeError as e:
         return bytes(), errors.new_common_edgex(
