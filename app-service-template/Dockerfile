@@ -1,4 +1,4 @@
-FROM python:3.10-alpine3.20
+FROM python:3.10-alpine3.22
 
 # TODO: Change Copyright to your company if open sourcing or remove label
 LABEL license='SPDX-License-Identifier: Apache-2.0' \
